@@ -1,6 +1,3 @@
-Here is a `README.md` for your project:
-
-```markdown
 # Config Decryptor by SHEEKOVIC
 
 ## Description
@@ -87,6 +84,3 @@ This project is open source and available under the MIT License. See the [LICENS
 - **GitHub**: [GitHub Profile](https://github.com/Sheekovic)
 
 Feel free to reach out if you have any questions or suggestions!
-```
-
-This `README.md` provides a clear and concise guide on how to use your application, as well as instructions on how to install dependencies and contribute to the project.
