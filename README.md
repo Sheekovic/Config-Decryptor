@@ -63,8 +63,7 @@ pip install cryptography
     - The window and elements adjust dynamically when resized to maintain a user-friendly layout.
 
 ## Screenshots
-
-*Include any screenshots of the application here.*
+![Config Decryptor Screenshot](https://i.ibb.co/Ykpb3Q7/Screenshot-2025-01-11-200726.png)
 
 ## License
 
