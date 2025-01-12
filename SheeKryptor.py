@@ -37,6 +37,23 @@ log_output_text = None  # We'll define this later in the GUI setup
 encrypted_output_directory = "encrypted_files"
 decrypted_output_directory = "decrypted_files"
 
+# Function to fetch title and version from the API
+def fetch_title_and_version():
+    try:
+        # Make the GET request to fetch the data
+        response = requests.get("https://sheekovic.github.io/api/api.json")
+        response.raise_for_status()  # Check for request errors
+        data = response.json()
+
+        # Extract title and version
+        title = data.get("title", "Default Title")  # Fallback to default if not found
+        version = data.get("version", "v1.0.0")  # Fallback to default if not found
+
+        return title, version
+    except requests.exceptions.RequestException as e:
+        messagebox.showerror("API Error", f"Failed to fetch title and version: {e}")
+        return "SheeKryptor", "v1.0.0"  # Fallback in case of error
+
 # Function to generate a strong password
 def generate_password(length):
     if length < 8:
@@ -469,11 +486,13 @@ def about_sheekryptor():
 this is the main GUI
 you can add widgets here
 """
-
-# Main GUI
-version = "v2.2.2"
 root = ThemedTk(theme='equilux')
-root.title("SheeKryptor " + version)
+
+# Fetch title and version from the API
+title, version = fetch_title_and_version()
+
+root.title(f"{title} {version}")
+
 # Set the window icon
 root.iconbitmap("assets/SheeKryptor.ico")
 
