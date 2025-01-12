@@ -18,6 +18,11 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
    git clone https://github.com/sheekovic/SheeKryptor.git
    cd SheeKryptor
    ```
+   or from GitHub CLI
+   ```bash
+   gh repo clone Sheekovic/SheeKryptor
+   cd SheeKryptor
+   ```
 
 2. **Install the required dependencies**:
    ```bash
