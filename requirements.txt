@@ -1,2 +1,3 @@
 cryptography==43.0.3
 ttkthemes==3.2.2
+pyotp==2.9.0
