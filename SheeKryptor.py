@@ -187,7 +187,7 @@ def get_output_file_path(input_file, is_encryption=True):
 # Function to start encryption
 def start_encryption():
     input_file = encryptor_input_file_entry.get()
-    password = password_entry.get()
+    password = encryptor_password_entry.get()
 
     if not input_file or not os.path.exists(input_file):
         messagebox.showerror("Error", "Invalid input file path.")
