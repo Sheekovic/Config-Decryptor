@@ -41,7 +41,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 
 ## Requirements
 
-- Python 3.x
+- Python 3.10 or later
 - `cryptography` package
 - `tkinter` (for GUI)
 - `ttkthemes` (for theme styling)
