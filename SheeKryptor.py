@@ -219,6 +219,11 @@ def start_encryption():
     output_file = get_output_file_path(input_file, is_encryption=True)
     encrypt_file(input_file, output_file, password)
 
+# Function to log messages to the Text widget
+def log(message):
+    log_output_text.insert('end', message + '\n')  # Insert the log message
+    log_output_text.yview('end')  # Scroll to the end
+
 # Function to start decryption
 def start_decryption():
     input_file = decryptor_input_file_entry.get()
@@ -565,7 +570,12 @@ decryptor_password_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
 
 ttk.Button(decryptor_tab, text="Decrypt", command=start_decryption, style="TButton").grid(row=4, column=0, columnspan=3, pady=20)
 
+"""
 #################### Encryptor Tab ####################
+This tab provides the interface for encrypting files.
+Users can input the file to encrypt, provide the password, and initiate the encryption process.
+The layout ensures all widgets are centered and evenly spaced.
+"""
 # Configure columns and rows for alignment
 encryptor_tab.grid_columnconfigure(0, weight=1)
 encryptor_tab.grid_columnconfigure(1, weight=1)
@@ -599,6 +609,12 @@ encryptor_password_entry = ttk.Entry(encryptor_tab, width=70, style="TEntry")
 encryptor_password_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
 
 ttk.Button(encryptor_tab, text="Encrypt", command=start_encryption, style="TButton").grid(row=4, column=0, columnspan=3, pady=20)
+
+# log output text widget to display logs
+log_output_text = tk.Text(encryptor_tab, width=80, height=10, wrap="word", background="#0D0221", foreground="#EDF5FC")
+log_output_text.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
+log_output_text.config(state='normal')
+log_output_text.insert('end', 'Encryption Log:\n')
 
 #################### PWD Generator Tab ####################
 pwd_generator_tab.grid_columnconfigure(0, weight=1)
