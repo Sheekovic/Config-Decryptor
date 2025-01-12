@@ -463,10 +463,15 @@ def update_otps():
 def about_sheekryptor():
     messagebox.showinfo("About SheeKryptor", "SheeKryptor is a secure encryption and decryption tool.\n\nVersion: v1.0.0\n\nAuthor: Ahmeed Sheeko\n\nContact: sheekovic@gmail.com")
 
+
+"""
 ################## Main GUI ##################
+this is the main GUI
+you can add widgets here
+"""
 
 # Main GUI
-version = "v2.2.1"
+version = "v2.2.2"
 root = ThemedTk(theme='equilux')
 root.title("SheeKryptor " + version)
 # Set the window icon
