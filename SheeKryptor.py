@@ -149,35 +149,35 @@ def encrypt_file(input_file, output_file, password):
 # Function to decrypt a file and log the actions
 def decrypt_file(input_file, output_file, password):
     try:
-        decryptor_log.insert("1.0", "Starting decryption process...\n")
+        decryptor_log.insert("end", "Starting decryption process...\n")
         
         with open(input_file, 'rb') as f:
             # Read the salt, IV, and encrypted data
             salt = f.read(16)
             iv = f.read(16)
             encrypted_data = f.read()
-        decryptor_log.insert("1.0", f"Read salt: {salt.hex()}\n")
-        decryptor_log.insert("1.0", f"Read IV: {iv.hex()}\n")
+        decryptor_log.insert("end", f"Read salt: {salt.hex()}\n")
+        decryptor_log.insert("end", f"Read IV: {iv.hex()}\n")
 
         # Derive the decryption key from the password and salt
         key = derive_key(password, salt)
-        decryptor_log.insert("1.0", f"Derived decryption key: {key.hex()}\n")
+        decryptor_log.insert("end", f"Derived decryption key: {key.hex()}\n")
 
         # Decrypt the data using AES (CBC mode)
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
         decryptor = cipher.decryptor()
         decrypted_data = decryptor.update(encrypted_data) + decryptor.finalize()
-        decryptor_log.insert("1.0", f"Decrypted data length: {len(decrypted_data)} bytes.\n")
+        decryptor_log.insert("end", f"Decrypted data length: {len(decrypted_data)} bytes.\n")
 
         # Write the decrypted data to the output file
         with open(output_file, 'wb') as f:
             f.write(decrypted_data)
-        decryptor_log.insert("1.0", f"Decryption completed. Output saved to: {output_file}\n")
+        decryptor_log.insert("end", f"Decryption completed. Output saved to: {output_file}\n")
 
         messagebox.showinfo("Success", f"Decryption completed. Output saved to:\n{output_file}")
 
     except Exception as e:
-        decryptor_log.insert("1.0", f"Error occurred during decryption: {e}\n")
+        decryptor_log.insert("end", f"Error occurred during decryption: {e}\n")
         messagebox.showerror("Error", f"Failed to decrypt file: {e}")
 
 
