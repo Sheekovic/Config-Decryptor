@@ -14,6 +14,7 @@ from ttkthemes import ThemedTk
 from cryptography.hazmat.backends import default_backend
 import tkinter.font as tkFont
 import pyotp
+import configparser
 
 # Database Setup
 conn = sqlite3.connect("2fa_accounts.db")
@@ -213,29 +214,64 @@ def start_decryption():
     output_file = get_output_file_path(input_file, is_encryption=False)
     decrypt_file(input_file, output_file, password)
 
-# Function to change the theme
-def change_theme():
+# Function to load settings
+def load_settings():
+    config = configparser.ConfigParser()
+    config.read("settings.ini")
+    if "Settings" in config:
+        # Apply saved theme
+        saved_theme = config["Settings"].get("theme", "equilux")
+        if saved_theme in style.theme_names():
+            style.theme_use(saved_theme)
+        
+        # Apply saved font size and style
+        saved_font_size = config["Settings"].get("font_size", "16")
+        saved_font_style = config["Settings"].get("font_style", "OCR A Extended")
+        
+        style.configure("TLabel", font=(saved_font_style, saved_font_size))
+        style.configure("TButton", font=(saved_font_style, saved_font_size))
+        style.configure("TEntry", font=(saved_font_style, saved_font_size))
+        style.configure("TFrame", font=(saved_font_style, saved_font_size))
+        style.configure("TCombobox", font=(saved_font_style, saved_font_size))
+        style.configure("TNotebook", font=(saved_font_style, saved_font_size))
+        style.configure("TCanvas", font=(saved_font_style, saved_font_size))
+        style.configure("TCheckbutton", font=(saved_font_style, saved_font_size))
+        style.configure("TScrollbar", font=(saved_font_style, saved_font_size))
+        style.configure("Treeview", font=(saved_font_style, saved_font_size))
+        # Refresh the application
+        root.update()
+
+# Function to update settings
+def update_settings():
     selected_theme = theme_combobox.get()
     style.theme_use(selected_theme)
-    style.configure("TLabel", font=(fontStyle, fontSize))
-    style.configure("TButton", font=(fontStyle, fontSize))
-    style.configure("TEntry", font=(fontStyle, fontSize))
-    style.configure("TFrame", font=(fontStyle, fontSize))
-    style.configure("TCombobox", font=(fontStyle, fontSize))
-    style.configure("TNotebook", font=(fontStyle, fontSize))
-    root.update()
 
-# change font size function
-def font_options():
     selected_font_size = font_size_combobox.get()
     selected_font_style = font_style_combobox.get()
+
+    style.configure("TLabel", font=(selected_font_style, selected_font_size))
+    style.configure("TButton", font=(selected_font_style, selected_font_size))
+    style.configure("TEntry", font=(selected_font_style, selected_font_size))
+    style.configure("TFrame", font=(selected_font_style, selected_font_size))
+    style.configure("TCombobox", font=(selected_font_style, selected_font_size))
     style.configure("TNotebook", font=(selected_font_style, selected_font_size))
-    style.configure('TEntry', font=(selected_font_style, selected_font_size))
-    style.configure('TCombobox', font=(selected_font_style, selected_font_size))
-    style.configure('TButton', font=(selected_font_style, selected_font_size))
-    style.configure('TLabel', font=(selected_font_style, selected_font_size))
-    style.configure('TFrame', font=(selected_font_style, selected_font_size))
+    style.configure("TCanvas", font=(selected_font_style, selected_font_size))
+    style.configure("TCheckbutton", font=(selected_font_style, selected_font_size))
+    style.configure("TScrollbar", font=(selected_font_style, selected_font_size))
+    style.configure("Treeview", font=(selected_font_style, selected_font_size))
+    
+    # Refresh the application
     root.update()
+
+    # Save settings to settings.ini
+    config = configparser.ConfigParser()
+    config["Settings"] = {
+        "theme": selected_theme,
+        "font_size": selected_font_size,
+        "font_style": selected_font_style
+    }
+    with open("settings.ini", "w") as f:
+        config.write(f)
 
 def send_api_request():
     api_url = api_url_entry.get()
@@ -401,7 +437,6 @@ fontStyle = "OCR A Extended"
 fontSize = 16
 headerFontSize = fontSize + 10
 
-
 # Colors
 black = "#000000"
 white = "#FFFFFF"
@@ -425,6 +460,10 @@ style.map('TButton',
 style.configure('TLabel', background=black, foreground=green, font=(fontStyle, fontSize))
 style.configure('TFrame', background=black, foreground=green, font=(fontStyle, fontSize))
 style.configure('TCheckbutton', background=black, foreground=green, font=(fontStyle, fontSize))
+style.configure('TCanvas', background=black, foreground=green, font=(fontStyle, fontSize))
+style.configure('TFrame', background=black, foreground=green, font=(fontStyle, fontSize))
+style.configure('TScrollbar', background=black, foreground=green, font=(fontStyle, fontSize))
+style.configure('Treeview', background=black, foreground=green, font=(fontStyle, fontSize))
 
 # Create Tabs for Decryptor and Encryptor
 tab_control = ttk.Notebook(root, style="TNotebook")
@@ -466,9 +505,15 @@ This tab provides the interface for decrypting files.
 Users can input the file to decrypt, provide the password, and initiate the decryption process.
 The layout ensures all widgets are centered and evenly spaced.
 """
+# Configure columns and rows for alignment
+decryptor_tab.grid_columnconfigure(0, weight=1)
+decryptor_tab.grid_columnconfigure(1, weight=1)
+decryptor_tab.grid_columnconfigure(2, weight=1)
+for i in range(6):  # Ensure all rows align uniformly
+    decryptor_tab.grid_rowconfigure(i, weight=1)
 
 # Decryptor Tab Input Fields and Buttons
-decryptor_label = ttk.Label(decryptor_tab, text="Decryptor", style="TLabel", font=(fontStyle, headerFontSize, "bold"))
+decryptor_label = ttk.Label(decryptor_tab, text="Decryptor", style="TLabel")
 decryptor_label.grid(row=0, column=0, columnspan=3, pady=10)
 
 # Description for decryptor tool
@@ -499,9 +544,15 @@ decryptor_password_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
 ttk.Button(decryptor_tab, text="Decrypt", command=start_decryption, style="TButton").grid(row=4, column=0, columnspan=3, pady=20)
 
 #################### Encryptor Tab ####################
+# Configure columns and rows for alignment
+encryptor_tab.grid_columnconfigure(0, weight=1)
+encryptor_tab.grid_columnconfigure(1, weight=1)
+encryptor_tab.grid_columnconfigure(2, weight=1)
+for i in range(6):  # Ensure all rows align uniformly
+    encryptor_tab.grid_rowconfigure(i, weight=1)
 
 # Encryptor Tab Title
-ttk.Label(encryptor_tab, text="Encryptor", style="TLabel", font=(fontStyle, headerFontSize, "bold")).grid(row=0, column=0, columnspan=3, pady=20)
+ttk.Label(encryptor_tab, text="Encryptor", style="TLabel").grid(row=0, column=0, columnspan=3, pady=20)
 
 # Description for the Encryptor tool
 ttk.Label(
@@ -535,7 +586,7 @@ for i in range(10):  # Add weights for all rows
     pwd_generator_tab.grid_rowconfigure(i, weight=1)
 
 # Strong Password Generator Section
-ttk.Label(pwd_generator_tab, text="Strong Password Generator", style="TLabel", font=(fontStyle, headerFontSize, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
+ttk.Label(pwd_generator_tab, text="Strong Password Generator", style="TLabel").grid(row=0, column=0, columnspan=2, pady=20)
 
 # Description for the Strong Password Generator tool
 ttk.Label(
@@ -563,7 +614,7 @@ password_entry = ttk.Entry(pwd_generator_tab, width=40, style="TEntry")
 password_entry.grid(row=4, column=1, padx=10, pady=10, sticky="w")
 
 # Personalized Password Generator Section
-ttk.Label(pwd_generator_tab, text="Personalized Password Generator", style="TLabel", font=(fontStyle, headerFontSize, "bold")).grid(row=5, column=0, columnspan=2, pady=20)
+ttk.Label(pwd_generator_tab, text="Personalized Password Generator", style="TLabel").grid(row=5, column=0, columnspan=2, pady=20)
 
 # Description for the Personalized Password Generator tool
 ttk.Label(
@@ -606,7 +657,7 @@ for i in range(12):  # Ensure all rows align uniformly
     api_testing_tab.grid_rowconfigure(i, weight=1)
 
 # API Testing Tab Title
-ttk.Label(api_testing_tab, text="API Testing", style="TLabel", font=(fontStyle, headerFontSize, "bold")).grid(row=0, column=0, columnspan=3, pady=20)
+ttk.Label(api_testing_tab, text="API Testing", style="TLabel").grid(row=0, column=0, columnspan=3, pady=20)
 
 # API URL Entry
 ttk.Label(api_testing_tab, text="API URL:", style="TLabel").grid(row=1, column=0, padx=10, pady=10, sticky="w")  # Align label to the right
@@ -704,12 +755,15 @@ update_otps()
 
 #################### Settings Tab ####################
 
+# Configure columns and rows for alignment
 settings_tab.grid_columnconfigure(0, weight=1)
-for i in range(9):  # Ensure all rows align uniformly
+settings_tab.grid_columnconfigure(1, weight=1)
+settings_tab.grid_columnconfigure(2, weight=1)
+for i in range(10):  # Ensure all rows align uniformly
     settings_tab.grid_rowconfigure(i, weight=1)
 
 # Settings Tab Title
-ttk.Label(settings_tab, text="Settings", style="TLabel", font=(fontStyle, headerFontSize, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
+ttk.Label(settings_tab, text="Settings", style="TLabel").grid(row=0, column=0, columnspan=3, pady=20)
 
 # Title Label
 ttk.Label(settings_tab, text="Theme Control", style="TLabel").grid(row=1, column=0, pady=20)
@@ -720,15 +774,11 @@ theme_combobox = ttk.Combobox(
     settings_tab, values=available_themes, style="TCombobox", state="readonly", justify="center"
 )
 theme_combobox.set(style.theme_use())  # Set the current theme as default
-theme_combobox.grid(row=2, column=0, padx=10, pady=10)
-
-# Button to apply theme
-apply_theme_button = ttk.Button(settings_tab, text="Apply Theme", command=change_theme, style="TButton")
-apply_theme_button.grid(row=3, column=0, padx=10, pady=10)
+theme_combobox.grid(row=1, column=1, padx=10, pady=10)
 
 # Label for font style
 ttk.Label(settings_tab, text="Change Font Style", style="TLabel").grid(
-    row=4, column=0, pady=20)
+    row=2, column=0, pady=20)
 
 # List available font styles in the combobox
 available_font_styles = sorted(tkFont.families())  # Get and sort available font families
@@ -736,11 +786,11 @@ font_style_combobox = ttk.Combobox(
     settings_tab, values=available_font_styles, style="TCombobox", state="readonly", justify="center"
 )
 font_style_combobox.set(fontStyle)  # Set the current font style as default
-font_style_combobox.grid(row=6, column=0, padx=10, pady=10)
+font_style_combobox.grid(row=2, column=1, padx=10, pady=10)
 
 # Label for font size
 ttk.Label(settings_tab, text="Change Font Size", style="TLabel").grid(
-    row=7, column=0, pady=20)
+    row=3, column=0, pady=20)
 
 
 # List available font sizes in the combobox
@@ -749,11 +799,11 @@ font_size_combobox = ttk.Combobox(
     settings_tab, values=available_font_sizes, style="TCombobox", state="readonly", justify="center"
 )
 font_size_combobox.set(fontSize)  # Set the current font size as default
-font_size_combobox.grid(row=9, column=0, padx=10, pady=10)
+font_size_combobox.grid(row=3, column=1, padx=10, pady=10)
 
 # Button to apply font options
-apply_font_size_button = ttk.Button(settings_tab, text="Apply Font Options", command=font_options, style="TButton")
-apply_font_size_button.grid(row=10, column=0, padx=10, pady=10)
+apply_font_size_button = ttk.Button(settings_tab, text="Apply Settings", command=update_settings, style="TButton")
+apply_font_size_button.grid(row=4, column=0, columnspan=3, padx=10, pady=10)
 
 # Exit Button
 ttk.Label(
@@ -761,10 +811,10 @@ ttk.Label(
     text="To close the application",
     wraplength=600,  # Adjust for better readability
     style="TLabel"
-).grid(row=11, column=0, padx=10, pady=10)
+).grid(row=5, column=0, padx=10, pady=10)
 
 exit_button = ttk.Button(settings_tab, text="Exit", command=root.destroy, style="TButton")
-exit_button.grid(row=12, column=0, padx=10, pady=10)
+exit_button.grid(row=5, column=1, padx=10, pady=10)
 
 
 
@@ -778,7 +828,7 @@ for i in range(4):  # Add weights for all rows
 
 
 # SheeKryptor
-ttk.Label(about_tab, text="SheeKryptor", style="TLabel", font=(fontStyle, headerFontSize, "bold")).grid(row=0, column=0, columnspan=2, pady=20)
+ttk.Label(about_tab, text="SheeKryptor", style="TLabel").grid(row=0, column=0, columnspan=2, pady=20)
 
 # App Description
 app_description = (
@@ -812,5 +862,8 @@ credits = (
 ttk.Label(about_tab, text=credits, anchor="center", justify="center", style="TLabel").grid(
     row=3, column=0, columnspan=2, padx=20, pady=10, sticky="nsew"
 )
+
+# Load settings at startup
+load_settings()
 
 root.mainloop()
