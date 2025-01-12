@@ -2,6 +2,7 @@ import hashlib
 import json
 import os
 import random
+import sqlite3
 import string
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import hashes
@@ -12,7 +13,25 @@ import requests
 from ttkthemes import ThemedTk
 from cryptography.hazmat.backends import default_backend
 import tkinter.font as tkFont
+import pyotp
+import qrcode
+from PIL import Image, ImageTk
 
+# Database Setup
+conn = sqlite3.connect("2fa_accounts.db")
+cursor = conn.cursor()
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS accounts (
+    id TEXT PRIMARY KEY,
+    provider TEXT NOT NULL,
+    username TEXT NOT NULL,
+    key TEXT NOT NULL,
+    time_based INTEGER NOT NULL
+)
+""")
+conn.commit()
+
+    
 # Define output directory
 encrypted_output_directory = "encrypted_files"
 decrypted_output_directory = "decrypted_files"
@@ -279,14 +298,105 @@ def save_results():
     except Exception as e:
         messagebox.showerror("Error", f"Failed to save results: {e}")
 
+# Function to add an account
+def add_account():
+    provider = provider_entry.get()
+    username = username_entry.get()
+    key = key_entry.get()
+    # Remove spaces from the key
+    key = key.replace(" ", "")
+    time_based = time_based_var.get()
+
+    if not username or not key:
+        messagebox.showerror("Error", "Username and Key are required!")
+        return
+
+    try:
+        # Validate Key
+        otp = pyotp.TOTP(key)
+        otp.now()  # Test generation
+    except:
+        messagebox.showerror("Error", "Invalid 2FA Key!")
+        return
+
+    # Generate the custom id: first two letters of provider + first two letters of username
+    custom_id = provider[:2].upper() + username[:2].upper()
+
+    # Get the current max number from the table to increment the ID
+    cursor.execute("SELECT MAX(SUBSTR(id, 5, LENGTH(id))) FROM accounts WHERE id LIKE ?", (custom_id + '%',))
+    max_id_suffix = cursor.fetchone()[0]
+
+    # If no records exist, start from 1
+    if max_id_suffix is None:
+        id_suffix = 1
+    else:
+        id_suffix = int(max_id_suffix) + 1
+
+    # Create the final unique ID
+    final_id = custom_id + str(id_suffix)
+
+    cursor.execute("INSERT INTO accounts (id, provider, username, key, time_based) VALUES (?, ?, ?, ?, ?)",
+                   (final_id, provider, username, key, time_based))
+    conn.commit()
+    refresh_accounts()
+    messagebox.showinfo("Success", "Account added successfully!")
+    
+# Function to delete account from the database
+def delete_account():
+    selected_account = account_combobox.get()
+
+    if not selected_account:
+        messagebox.showerror("Error", "No account selected for deletion!")
+        return
+
+    # Delete the account from the database based on the selected id
+    cursor.execute("DELETE FROM accounts WHERE id = ?", (selected_account,))
+    conn.commit()
+    refresh_accounts()
+    messagebox.showinfo("Success", "Account deleted successfully!")
+
+def refresh_accounts():
+    # Delete all rows in the table
+    for row in accounts_table.get_children():
+        accounts_table.delete(row)
+
+    # Fetch accounts from the database, including the id
+    cursor.execute("SELECT id, provider, username, key, time_based FROM accounts")
+    accounts = cursor.fetchall()  # Store the accounts to use later
+
+    # Insert rows into the table
+    for account in accounts:
+        otp = pyotp.TOTP(account[3])
+        current_otp = otp.now()
+        accounts_table.insert("", "end", values=(account[0], account[1], account[2], current_otp))
+
+    # Update the combobox values with account ids
+    account_combobox['values'] = [account[0] for account in accounts]
+
+
+def update_otps():
+    for child in accounts_table.get_children():
+        item = accounts_table.item(child)
+        username = item['values'][0]
+
+        cursor.execute("SELECT key FROM accounts WHERE username = ?", (username,))
+        account = cursor.fetchone()
+        if account:
+            otp = pyotp.TOTP(account[0])
+            current_otp = otp.now()
+            accounts_table.item(child, values=(username, current_otp))
+
+    root.after(1000, update_otps)  # Refresh OTPs every second
+    
 def about_sheekryptor():
     messagebox.showinfo("About SheeKryptor", "SheeKryptor is a secure encryption and decryption tool.\n\nVersion: v1.0.0\n\nAuthor: Ahmeed Sheeko\n\nContact: sheekovic@gmail.com")
 
 # Main GUI
-version = "v2.1.2"
+version = "v2.2.0"
 root = ThemedTk(theme='equilux')
 root.title("SheeKryptor " + version)
-root.iconbitmap("SheeKryptor.ico")
+# Set the window icon
+root.iconbitmap("assets/SheeKryptor.ico")
 
 # Constants
 fontStyle = "OCR A Extended"
@@ -316,6 +426,7 @@ style.map('TButton',
                       ('active', green)])
 style.configure('TLabel', background=black, foreground=green, font=(fontStyle, fontSize))
 style.configure('TFrame', background=black, foreground=green, font=(fontStyle, fontSize))
+style.configure('TCheckbutton', background=black, foreground=green, font=(fontStyle, fontSize))
 
 # Create Tabs for Decryptor and Encryptor
 tab_control = ttk.Notebook(root, style="TNotebook")
@@ -335,6 +446,10 @@ tab_control.add(pwd_generator_tab, text="PWD Generator", padding=10)
 # Add the API Testing Tab to the Notebook
 api_testing_tab = ttk.Frame(tab_control, style="TFrame")
 tab_control.add(api_testing_tab, text="API Testing", padding=10)
+
+# Add 2FA Tool Tab to the Notebook
+two_factor_tab = ttk.Frame(tab_control, style="TFrame")
+tab_control.add(two_factor_tab, text="2FA Tool", padding=10)
 
 # Settings tab
 settings_tab = ttk.Frame(tab_control, style="TFrame")
@@ -531,6 +646,63 @@ ttk.Button(api_testing_tab, text="Test API", command=send_api_request, style="TB
 # Save Results Button
 ttk.Button(api_testing_tab, text="Save Results", command=save_results, style="TButton").grid(row=8, column=0, pady=10, columnspan=3)
 
+#################### 2FA Tool Tab ####################
+two_factor_tab.grid_columnconfigure(0, weight=1)
+for i in range(12):  # Ensure all rows align uniformly
+    two_factor_tab.grid_rowconfigure(i, weight=1)
+
+
+# Input Section
+frame = ttk.Frame(two_factor_tab)
+frame.pack(pady=10)
+
+time_based_var = tk.IntVar()
+
+ttk.Label(frame, text="Provider:").grid(row=0, column=0, padx=5, pady=5)
+provider_entry = ttk.Entry(frame)
+provider_entry  .grid(row=0, column=1, padx=5, pady=5)
+
+ttk.Label(frame, text="Username/Email:").grid(row=1, column=0, padx=5, pady=5)
+username_entry = ttk.Entry(frame)
+username_entry.grid(row=1, column=1, padx=5, pady=5)
+
+ttk.Label(frame, text="2FA Key:").grid(row=2, column=0, padx=5, pady=5)
+key_entry = ttk.Entry(frame)
+key_entry.grid(row=2, column=1, padx=5, pady=5)
+
+time_based_checkbox = ttk.Checkbutton(frame, text="Time Based", variable=time_based_var)
+# Set the default value to True
+time_based_var.set(True)
+time_based_checkbox.grid(row=3, column=1, pady=5)
+
+add_button = ttk.Button(frame, text="Add Account", command=add_account)
+add_button.grid(row=4, column=0, columnspan=2, pady=10)
+
+# Accounts Table
+columns = ("id", "Provider", "Account", "OTP")
+accounts_table = ttk.Treeview(frame, columns=columns, show="headings")
+accounts_table.heading("id", text="ID")
+accounts_table.heading("Provider", text="Provider")
+accounts_table.heading("Account", text="Account")
+accounts_table.heading("OTP", text="OTP")
+accounts_table.grid(row=5, column=0, columnspan=2, padx=10, pady=10)
+
+# make the table scrollable
+scrollbar = ttk.Scrollbar(frame, orient="vertical", command=accounts_table.yview)
+scrollbar.grid(row=5, column=2, sticky="ns")
+accounts_table.configure(yscrollcommand=scrollbar.set)
+
+# combo box for accounts to choose to delete
+account_combobox = ttk.Combobox(frame, values=[], state="readonly", justify="center")
+account_combobox.set(1)
+account_combobox.grid(row=6, column=0, padx=10, pady=10, sticky="nsew")
+# Delete Button
+delete_button = ttk.Button(frame, text="Delete Account", command=delete_account)
+delete_button.grid(row=6, column=1, columnspan=2, pady=10)
+
+# Start OTP Update
+refresh_accounts()
+update_otps()
 
 #################### Settings Tab ####################
 
