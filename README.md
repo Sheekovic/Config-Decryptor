@@ -35,6 +35,10 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
    python sheekryptor.py
    ```
 
+4. **If you're lazy or this thing is new to you**
+-- Run `EasySetup(RunFromHere).bat` file, and you're good to go
+
+
 ## Requirements
 
 - Python 3.x
