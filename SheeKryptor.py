@@ -283,7 +283,7 @@ def about_sheekryptor():
     messagebox.showinfo("About SheeKryptor", "SheeKryptor is a secure encryption and decryption tool.\n\nVersion: v1.0.0\n\nAuthor: Ahmeed Sheeko\n\nContact: sheekovic@gmail.com")
 
 # Main GUI
-version = "v2.1.1"
+version = "v2.1.2"
 root = ThemedTk(theme='equilux')
 root.title("SheeKryptor " + version)
 root.iconbitmap("SheeKryptor.ico")
