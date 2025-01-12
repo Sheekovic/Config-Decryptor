@@ -206,14 +206,16 @@ def get_output_file_path(input_file, is_encryption=True):
     # If it's encryption, append 'encrypted' to the filename
     if is_encryption:
         new_name = f"{name}_encrypted{ext}"
+        output_directory = encrypted_output_directory
     else:
         new_name = f"{name}_decrypted{ext}"
+        output_directory = decrypted_output_directory
 
     # Ensure the output directory exists
-    if not os.path.exists(encrypted_output_directory):
-        os.makedirs(encrypted_output_directory)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
 
-    return os.path.join(encrypted_output_directory, new_name)
+    return os.path.join(output_directory, new_name)
 
 # Function to start encryption
 def start_encryption():
