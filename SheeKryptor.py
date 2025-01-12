@@ -286,6 +286,7 @@ def about_sheekryptor():
 version = "v2.1.1"
 root = ThemedTk(theme='equilux')
 root.title("SheeKryptor " + version)
+root.iconbitmap("SheeKryptor.ico")
 
 # Constants
 fontStyle = "OCR A Extended"
