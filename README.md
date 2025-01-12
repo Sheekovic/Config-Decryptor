@@ -56,6 +56,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 3. Enter a strong password.
 4. Click the "Encrypt" button to generate the encrypted file.
 5. The encrypted file will be saved in the `encrypted_files` folder with `_encrypted` appended to the filename.
+6. Added Log Box for viewing the encryption process logs.
 
 ### Decrypt a File
 1. Go to the "Decryptor" tab.
@@ -63,6 +64,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 3. Enter the password used for encryption.
 4. Click the "Decrypt" button to retrieve the original file.
 5. The decrypted file will be saved in the `decrypted_files` folder with `_decrypted` appended to the filename.
+6. Added Log Box for viewing the decryption process logs.
 
 ### Password Generator
 1. Go to the "PWD Generator" tab.
@@ -114,7 +116,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 
 SheeKryptor is a simple but powerful tool for securely encrypting and decrypting files. It aims to provide a safe and easy-to-use solution for managing sensitive data.
 
-- **Version**: v2.2.1
+- **Version**: v2.2.2
 - **Author**: Ahmeed Sheeko
 - **Contact**: sheekovic@gmail.com
 
