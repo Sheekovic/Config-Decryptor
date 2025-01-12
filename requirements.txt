@@ -1,3 +1,2 @@
-cryptography
-tkinter
-ttkthemes
+cryptography==43.0.3
+ttkthemes==3.2.2
