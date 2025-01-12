@@ -37,6 +37,10 @@ echo Done installing cryptography.
 echo Installing ttkthemes library...
 pip install ttkthemes
 echo Done installing ttkthemes.
+echo Installing pyotp library...
+pip install pyotp
+echo Done installing pyotp.
+
 
 :: Run the SheeKryptor script
 echo Running SheeKryptor...
