@@ -7,7 +7,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import tkinter as tk
-from tkinter import Tk, Canvas, Label, Entry, Button, filedialog, messagebox, ttk
+from tkinter import filedialog, messagebox, ttk
 import requests
 from ttkthemes import ThemedTk
 from cryptography.hazmat.backends import default_backend
