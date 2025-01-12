@@ -30,7 +30,9 @@ CREATE TABLE IF NOT EXISTS accounts (
 """)
 conn.commit()
 
-    
+# Add a Text widget for logs in the Encryptor Tab
+log_output_text = None  # We'll define this later in the GUI setup
+
 # Define output directory
 encrypted_output_directory = "encrypted_files"
 decrypted_output_directory = "decrypted_files"
@@ -98,77 +100,86 @@ def derive_key(password, salt, length=32):
 # Function to encrypt a file
 def encrypt_file(input_file, output_file, password):
     try:
-        print("Starting encryption process...")
+        log("Starting encryption process...")
 
         # Generate a random IV for encryption
         iv = os.urandom(16)  # AES block size is 16 bytes
-        print(f"Generated IV: {iv.hex()}")
+        log(f"Generated IV: {iv.hex()}")
 
         # Generate a salt for key derivation
         salt = os.urandom(16)
-        print(f"Generated salt: {salt.hex()}")
+        log(f"Generated salt: {salt.hex()}")
 
         # Derive the encryption key from the password and salt
         key = derive_key(password, salt)
-        print(f"Derived encryption key: {key.hex()}")
+        log(f"Derived encryption key: {key.hex()}")
 
         # Read the input file data
-        print(f"Opening input file: {input_file}")
+        log(f"Opening input file: {input_file}")
         with open(input_file, 'rb') as f:
             data = f.read()
-        print(f"Read {len(data)} bytes from the input file.")
+        log(f"Read {len(data)} bytes from the input file.")
 
         # Apply padding to make data length a multiple of the block size (16 bytes)
         padder = padding.PKCS7(128).padder()  # AES block size is 128 bits (16 bytes)
         padded_data = padder.update(data) + padder.finalize()
-        print(f"Padded data length: {len(padded_data)} bytes.")
+        log(f"Padded data length: {len(padded_data)} bytes.")
 
         # Encrypt the file data using AES (CBC mode)
-        print("Starting encryption with AES (CBC mode)...")
+        log("Starting encryption with AES (CBC mode)...")
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
         encryptor = cipher.encryptor()
         encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
-        print(f"Encryption completed. {len(encrypted_data)} bytes of encrypted data.")
+        log(f"Encryption completed. {len(encrypted_data)} bytes of encrypted data.")
 
         # Write the salt, IV, and encrypted data to the output file
-        print(f"Saving encrypted data to output file: {output_file}")
+        log(f"Saving encrypted data to output file: {output_file}")
         with open(output_file, 'wb') as f:
             f.write(salt)  # Store the salt for later key derivation
             f.write(iv)    # Store the IV
             f.write(encrypted_data)
-        print(f"Output file saved successfully: {output_file}")
+        log(f"Output file saved successfully: {output_file}")
 
         messagebox.showinfo("Success", f"Encryption completed. Output saved to:\n{output_file}")
 
     except Exception as e:
-        print(f"Error occurred during encryption: {e}")
+        log(f"Error occurred during encryption: {e}")
         messagebox.showerror("Error", f"Failed to encrypt file: {e}")
 
-# Function to decrypt a file
+# Function to decrypt a file and log the actions
 def decrypt_file(input_file, output_file, password):
     try:
+        decryptor_log.insert("1.0", "Starting decryption process...\n")
+        
         with open(input_file, 'rb') as f:
             # Read the salt, IV, and encrypted data
             salt = f.read(16)
             iv = f.read(16)
             encrypted_data = f.read()
+        decryptor_log.insert("1.0", f"Read salt: {salt.hex()}\n")
+        decryptor_log.insert("1.0", f"Read IV: {iv.hex()}\n")
 
         # Derive the decryption key from the password and salt
         key = derive_key(password, salt)
+        decryptor_log.insert("1.0", f"Derived decryption key: {key.hex()}\n")
 
         # Decrypt the data using AES (CBC mode)
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
         decryptor = cipher.decryptor()
         decrypted_data = decryptor.update(encrypted_data) + decryptor.finalize()
+        decryptor_log.insert("1.0", f"Decrypted data length: {len(decrypted_data)} bytes.\n")
 
         # Write the decrypted data to the output file
         with open(output_file, 'wb') as f:
             f.write(decrypted_data)
+        decryptor_log.insert("1.0", f"Decryption completed. Output saved to: {output_file}\n")
 
         messagebox.showinfo("Success", f"Decryption completed. Output saved to:\n{output_file}")
 
     except Exception as e:
+        decryptor_log.insert("1.0", f"Error occurred during decryption: {e}\n")
         messagebox.showerror("Error", f"Failed to decrypt file: {e}")
+
 
 # Function to browse input file
 def browse_input_file_decrypt():
@@ -569,6 +580,10 @@ decryptor_password_entry = ttk.Entry(decryptor_tab, width=70, style="TEntry")
 decryptor_password_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
 
 ttk.Button(decryptor_tab, text="Decrypt", command=start_decryption, style="TButton").grid(row=4, column=0, columnspan=3, pady=20)
+
+# Log Text Area
+decryptor_log = tk.Text(decryptor_tab, width=80, height=10, wrap="word", state="normal", background="#0D0221", foreground="#EDF5FC")
+decryptor_log.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
 
 """
 #################### Encryptor Tab ####################
