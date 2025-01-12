@@ -5,7 +5,7 @@ import random
 import sqlite3
 import string
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, padding
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
@@ -98,30 +98,50 @@ def derive_key(password, salt, length=32):
 # Function to encrypt a file
 def encrypt_file(input_file, output_file, password):
     try:
+        print("Starting encryption process...")
+
         # Generate a random IV for encryption
         iv = os.urandom(16)  # AES block size is 16 bytes
-        salt = os.urandom(16)  # Generate a salt for key derivation
+        print(f"Generated IV: {iv.hex()}")
+
+        # Generate a salt for key derivation
+        salt = os.urandom(16)
+        print(f"Generated salt: {salt.hex()}")
 
         # Derive the encryption key from the password and salt
         key = derive_key(password, salt)
+        print(f"Derived encryption key: {key.hex()}")
 
+        # Read the input file data
+        print(f"Opening input file: {input_file}")
         with open(input_file, 'rb') as f:
             data = f.read()
+        print(f"Read {len(data)} bytes from the input file.")
+
+        # Apply padding to make data length a multiple of the block size (16 bytes)
+        padder = padding.PKCS7(128).padder()  # AES block size is 128 bits (16 bytes)
+        padded_data = padder.update(data) + padder.finalize()
+        print(f"Padded data length: {len(padded_data)} bytes.")
 
         # Encrypt the file data using AES (CBC mode)
+        print("Starting encryption with AES (CBC mode)...")
         cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
         encryptor = cipher.encryptor()
-        encrypted_data = encryptor.update(data) + encryptor.finalize()
+        encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
+        print(f"Encryption completed. {len(encrypted_data)} bytes of encrypted data.")
 
         # Write the salt, IV, and encrypted data to the output file
+        print(f"Saving encrypted data to output file: {output_file}")
         with open(output_file, 'wb') as f:
             f.write(salt)  # Store the salt for later key derivation
             f.write(iv)    # Store the IV
             f.write(encrypted_data)
+        print(f"Output file saved successfully: {output_file}")
 
         messagebox.showinfo("Success", f"Encryption completed. Output saved to:\n{output_file}")
 
     except Exception as e:
+        print(f"Error occurred during encryption: {e}")
         messagebox.showerror("Error", f"Failed to encrypt file: {e}")
 
 # Function to decrypt a file
