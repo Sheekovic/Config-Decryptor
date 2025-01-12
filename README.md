@@ -108,12 +108,13 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 1. Go to the "Settings" tab.
 2. Change the theme from the dropdown list.
 3. Customize the font style and size to your preference.
+4. Settings will be saved and applied on the next launch.
 
 ## About
 
 SheeKryptor is a simple but powerful tool for securely encrypting and decrypting files. It aims to provide a safe and easy-to-use solution for managing sensitive data.
 
-- **Version**: v2.2.0
+- **Version**: v2.2.1
 - **Author**: Ahmeed Sheeko
 - **Contact**: sheekovic@gmail.com
 
