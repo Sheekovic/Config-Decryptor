@@ -14,8 +14,6 @@ from ttkthemes import ThemedTk
 from cryptography.hazmat.backends import default_backend
 import tkinter.font as tkFont
 import pyotp
-import qrcode
-from PIL import Image, ImageTk
 
 # Database Setup
 conn = sqlite3.connect("2fa_accounts.db")
