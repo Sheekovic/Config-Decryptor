@@ -1,4 +1,5 @@
 import hashlib
+import json
 import os
 import random
 import string
@@ -7,6 +8,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import tkinter as tk
 from tkinter import Tk, Canvas, Label, Entry, Button, filedialog, messagebox, ttk
+import requests
 from ttkthemes import ThemedTk
 from cryptography.hazmat.backends import default_backend
 import tkinter.font as tkFont
@@ -216,12 +218,72 @@ def font_options():
     style.configure('TButton', font=(selected_font_style, selected_font_size))
     style.configure('TLabel', font=(selected_font_style, selected_font_size))
     style.configure('TFrame', font=(selected_font_style, selected_font_size))
+    root.update()
+
+def send_api_request():
+    api_url = api_url_entry.get()
+    request_type = request_type_combobox.get()
+    headers = headers_entry.get()
+    auth_token = auth_token_entry.get()
+    request_body = request_body_entry.get()
+
+    headers_dict = {}
+    try:
+        if headers:
+            headers_dict = json.loads(headers)  # Parse headers as JSON if provided
+    except json.JSONDecodeError:
+        messagebox.showerror("Error", "Invalid headers format. Please provide valid JSON.")
+
+    # Add Authorization token to headers if provided
+    if auth_token:
+        headers_dict["Authorization"] = f"Bearer {auth_token}"
+
+    try:
+        # Send the API request based on the selected type
+        if request_type == "GET":
+            response = requests.get(api_url, headers=headers_dict)
+        elif request_type == "POST":
+            response = requests.post(api_url, json=json.loads(request_body), headers=headers_dict)
+        elif request_type == "PUT":
+            response = requests.put(api_url, json=json.loads(request_body), headers=headers_dict)
+        elif request_type == "DELETE":
+            response = requests.delete(api_url, headers=headers_dict)
+
+        # Display the response in the response area
+        response_text.delete(1.0, "end")  # Clear previous response
+        response_text.insert("insert", f"Response Code: {response.status_code}\n")
+        response_text.insert("insert", f"Response Body:\n{response.text}")
+    
+    except requests.exceptions.RequestException as e:
+        # display error message in response area
+        response_text.delete(1.0, "end")  # Clear previous response
+        response_text.insert("insert", f"Request failed: {e}")
+    except json.JSONDecodeError as e:
+        # display error message in response area
+        response_text.delete(1.0, "end")  # Clear previous response
+        response_text.insert("insert", f"Invalid request body format. Please provide valid JSON, {e}")
+    except Exception as e:
+        # display error message in response area
+        response_text.delete(1.0, "end")  # Clear previous response
+        response_text.insert("insert", f"Failed to send API request: {e}")
+
+# Optional: Save Results Button (save to a text file)
+def save_results():
+    try:
+        response_data = response_text.get(1.0, "end")
+        file_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
+        if file_path:
+            with open(file_path, "w") as file:
+                file.write(response_data)
+            messagebox.showinfo("Success", f"Results saved to {file_path}")
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to save results: {e}")
 
 def about_sheekryptor():
     messagebox.showinfo("About SheeKryptor", "SheeKryptor is a secure encryption and decryption tool.\n\nVersion: v1.0.0\n\nAuthor: Ahmeed Sheeko\n\nContact: sheekovic@gmail.com")
 
 # Main GUI
-version = "v2.0.0"
+version = "v2.1.0"
 root = ThemedTk(theme='equilux')
 root.title("SheeKryptor " + version)
 
@@ -245,7 +307,12 @@ style.configure("TNotebook", background=black, foreground=green, font=(fontStyle
 style.configure('TEntry', background=black, foreground=green, font=(fontStyle, fontSize))
 style.configure('TCombobox', font=(fontStyle, fontSize))
 style.map('TCombobox', fieldbackground=[('readonly', black)], foreground=[('readonly', green)])
-style.configure('TButton', background=black, foreground=green, font=(fontStyle, fontSize))
+# Configure the default button style
+style.configure('TButton', background="black", foreground="green", font=(fontStyle, fontSize))
+# Map the button style for different states (active, pressed, and hover)
+style.map('TButton',
+          foreground=[('pressed', 'white'),  # Green text when pressed
+                      ('active', green)])
 style.configure('TLabel', background=black, foreground=green, font=(fontStyle, fontSize))
 style.configure('TFrame', background=black, foreground=green, font=(fontStyle, fontSize))
 
@@ -263,6 +330,10 @@ tab_control.add(encryptor_tab, text="Encryptor", padding=10)
 # PWD Generator tab
 pwd_generator_tab = ttk.Frame(tab_control, style="TFrame")
 tab_control.add(pwd_generator_tab, text="PWD Generator", padding=10)
+
+# Add the API Testing Tab to the Notebook
+api_testing_tab = ttk.Frame(tab_control, style="TFrame")
+tab_control.add(api_testing_tab, text="API Testing", padding=10)
 
 # Settings tab
 settings_tab = ttk.Frame(tab_control, style="TFrame")
@@ -414,6 +485,52 @@ ttk.Label(pwd_generator_tab, text="Generated Password:", style="TLabel").grid(ro
 personal_password_entry = ttk.Entry(pwd_generator_tab, width=40, style="TEntry")
 personal_password_entry.grid(row=11, column=1, padx=10, pady=10, sticky="w")
 
+#################### API Test Tab ####################
+# Configure columns and rows for centering
+api_testing_tab.grid_columnconfigure(0, weight=1)
+for i in range(12):  # Ensure all rows align uniformly
+    api_testing_tab.grid_rowconfigure(i, weight=1)
+
+# API Testing Tab Title
+ttk.Label(api_testing_tab, text="API Testing", style="TLabel", font=(fontStyle, headerFontSize, "bold")).grid(row=0, column=0, columnspan=3, pady=20)
+
+# API URL Entry
+ttk.Label(api_testing_tab, text="API URL:", style="TLabel").grid(row=1, column=0, padx=10, pady=10, sticky="w")  # Align label to the right
+api_url_entry = ttk.Entry(api_testing_tab, width=70, style="TEntry")
+api_url_entry.grid(row=1, column=1, padx=10, pady=10, sticky="e")
+
+# API Request Type (GET, POST, PUT, DELETE)
+ttk.Label(api_testing_tab, text="Request Type:", style="TLabel").grid(row=2, column=0, padx=10, pady=10, sticky="w")
+request_type_combobox = ttk.Combobox(api_testing_tab, values=["GET", "POST", "PUT", "DELETE"], style="TCombobox", state="readonly", justify="center")
+request_type_combobox.set("GET") # Set default value
+request_type_combobox.grid(row=2, column=1, padx=10, pady=10)
+
+# Headers input (JSON format example)
+ttk.Label(api_testing_tab, text="Headers (JSON format):", style="TLabel").grid(row=3, column=0, padx=10, pady=10, sticky="w")
+headers_entry = ttk.Entry(api_testing_tab, width=70, style="TEntry")
+headers_entry.grid(row=3, column=1, padx=10, pady=10, sticky="w")
+
+# Authentication Token input
+ttk.Label(api_testing_tab, text="Auth Token:", style="TLabel").grid(row=4, column=0, padx=10, pady=10, sticky="w")
+auth_token_entry = ttk.Entry(api_testing_tab, width=70, style="TEntry")
+auth_token_entry.grid(row=4, column=1, padx=10, pady=10, sticky="w")
+
+# Request Body Entry (For POST/PUT requests)
+ttk.Label(api_testing_tab, text="Request Body (JSON format):", style="TLabel").grid(row=5, column=0, padx=10, pady=10, sticky="w")
+request_body_entry = ttk.Entry(api_testing_tab, width=70, style="TEntry")
+request_body_entry.grid(row=5, column=1, padx=10, pady=10, sticky="w")
+
+# Response Viewer (Text area)
+response_text = tk.Text(api_testing_tab, width=80, height=15, wrap="word", background="#0D0221", foreground="#EDF5FC")
+response_text.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
+
+# Send Request Button
+ttk.Button(api_testing_tab, text="Test API", command=send_api_request, style="TButton").grid(row=7, column=0, pady=10, columnspan=3)
+
+# Save Results Button
+ttk.Button(api_testing_tab, text="Save Results", command=save_results, style="TButton").grid(row=8, column=0, pady=10, columnspan=3)
+
+
 #################### Settings Tab ####################
 
 settings_tab.grid_columnconfigure(0, weight=1)
@@ -503,7 +620,7 @@ ttk.Label(about_tab, text=app_description, wraplength=600, anchor="center", just
 
 # Version and Features
 version_info = (
-    "Version: v1.0.0\n"
+    "Version:"+version+"\n"
     "Features:\n"
     "- Secure File Encryption & Decryption\n"
     "- Strong Password Generator\n"

@@ -7,6 +7,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 - **File Encryption**: Encrypt files securely with AES (CBC mode) using a user-defined password.
 - **File Decryption**: Decrypt encrypted files by providing the correct password.
 - **Password Generator**: Generate strong passwords with the option to create personalized passwords based on your name and date of birth.
+- **API Testing**: Test any API endpoints with the SheeKryptor API , which supports GET, POST, PUT, and DELETE requests.
 - **User-Friendly GUI**: Simple and intuitive graphical interface built using Tkinter.
 - **Customizable Settings**: Change the theme and font style/size for a personalized experience.
 - **Cross-Platform**: Works on Windows, macOS, and Linux.
@@ -68,6 +69,14 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 3. Choose the password length.
 4. Click "Generate" to create a personalized password based on your details.
 
+### API Testing
+1. Go to the "API Testing" tab.
+2. Enter the API endpoint URL.
+3. Select the HTTP method (GET, POST, PUT, DELETE).
+4. Enter any required parameters.
+5. click "Test API" to send the request and view the response.
+6. Save Results to a text file by clicking "Save Results".
+
 ## Themes and Font Customization
 1. Go to the "Settings" tab.
 2. Change the theme from the dropdown list.
@@ -77,7 +86,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 
 SheeKryptor is a simple but powerful tool for securely encrypting and decrypting files. It aims to provide a safe and easy-to-use solution for managing sensitive data.
 
-- **Version**: v2.0.0
+- **Version**: v2.1.0
 - **Author**: Ahmeed Sheeko
 - **Contact**: sheekovic@gmail.com
 
