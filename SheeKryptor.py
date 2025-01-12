@@ -227,7 +227,6 @@ def load_settings():
         # Apply saved font size and style
         saved_font_size = config["Settings"].get("font_size", "16")
         saved_font_style = config["Settings"].get("font_style", "OCR A Extended")
-        
         style.configure("TLabel", font=(saved_font_style, saved_font_size))
         style.configure("TButton", font=(saved_font_style, saved_font_size))
         style.configure("TEntry", font=(saved_font_style, saved_font_size))
@@ -272,6 +271,7 @@ def update_settings():
     }
     with open("settings.ini", "w") as f:
         config.write(f)
+
 
 def send_api_request():
     api_url = api_url_entry.get()
@@ -424,6 +424,8 @@ def update_otps():
     
 def about_sheekryptor():
     messagebox.showinfo("About SheeKryptor", "SheeKryptor is a secure encryption and decryption tool.\n\nVersion: v1.0.0\n\nAuthor: Ahmeed Sheeko\n\nContact: sheekovic@gmail.com")
+
+################## Main GUI ##################
 
 # Main GUI
 version = "v2.2.1"
