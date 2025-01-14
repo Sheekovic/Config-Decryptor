@@ -11,6 +11,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 - **2FA Tool**: Securely manage and generate OTP codes for Two-Factor Authentication (TOTP) accounts.
 - **SquashIT**: Compress and decompress files using zlib, gzip, and tar.zlib.
 - **ConvertX**: Convert between different file formats, including image to Base64, Base64 to image, text encoding, and Base64 to text.
+- **Temp Mail**: Generate and manage temporary emails for testing purposes.
 - **User-Friendly GUI**: Simple and intuitive graphical interface built using Tkinter.
 - **Customizable Settings**: Change the theme and font style/size for a personalized experience.
 - **Cross-Platform**: Works on Windows, macOS, and Linux.
@@ -127,6 +128,12 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 4. Click "Convert" to start the conversion process.
 5. The converted file will be saved in the same directory as the original file.
 
+### Temp Mail Tool - Generate and Manage Temporary Emails
+1. Go to the "Temp Mail" tab.
+2. Enter Name and Password.
+3. Click "Generate" to generate a temporary email address.
+4. Refresh button to refresh messages.
+
 ## Themes and Font Customization
 1. Go to the "Settings" tab.
 2. Change the theme from the dropdown list.
@@ -137,7 +144,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 
 SheeKryptor is a simple but powerful tool for securely encrypting and decrypting files. It aims to provide a safe and easy-to-use solution for managing sensitive data.
 
-- **Version**: v2.3.3
+- **Version**: v2.4.4
 - **Author**: Ahmeed Sheeko
 - **Contact**: sheekovic@gmail.com
 
