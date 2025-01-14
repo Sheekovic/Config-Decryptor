@@ -9,6 +9,8 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 - **Password Generator**: Generate strong passwords with the option to create personalized passwords based on your name and date of birth.
 - **API Testing**: Test any API endpoints with the SheeKryptor API , which supports GET, POST, PUT, and DELETE requests.
 - **2FA Tool**: Securely manage and generate OTP codes for Two-Factor Authentication (TOTP) accounts.
+- **SquashIT**: Compress and decompress files using zlib, gzip, and tar.zlib.
+- **ConvertX**: Convert between different file formats, including image to Base64, Base64 to image, text encoding, and Base64 to text.
 - **User-Friendly GUI**: Simple and intuitive graphical interface built using Tkinter.
 - **Customizable Settings**: Change the theme and font style/size for a personalized experience.
 - **Cross-Platform**: Works on Windows, macOS, and Linux.
@@ -106,6 +108,25 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 9. OTP Refresh.
    - The OTP for each account will be refreshed every second to show the current code. The table will display the updated OTP in real-time.
 
+### SquashIT Tool - File Compression
+1. Go to the "SquashIT" tab.
+2. Select the file you want to compress by clicking "Browse".
+3. Choose the compression method (zlib, gzip, tar.zlib).
+4. Set the compression level (0-9).
+5. Click "Compress" to start the compression process.
+
+### UnSquashIT Tool - File Decompression
+1. Go to the "SquashIT" tab.
+2. Select the compressed file by clicking "Browse".
+3. Click "UnSquashIT" to decompress the file.
+
+### ConvertX Tool - File Conversion
+1. Go to the "ConvertX" tab.
+2. Select the file you want to convert by clicking "Browse".
+3. Choose the conversion type (image to Base64, Base64 to image, text encoding, Base64 to text).
+4. Click "Convert" to start the conversion process.
+5. The converted file will be saved in the same directory as the original file.
+
 ## Themes and Font Customization
 1. Go to the "Settings" tab.
 2. Change the theme from the dropdown list.
@@ -116,7 +137,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 
 SheeKryptor is a simple but powerful tool for securely encrypting and decrypting files. It aims to provide a safe and easy-to-use solution for managing sensitive data.
 
-- **Version**: v2.2.2
+- **Version**: v2.3.3
 - **Author**: Ahmeed Sheeko
 - **Contact**: sheekovic@gmail.com
 
