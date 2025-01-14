@@ -1,3 +1,4 @@
+import base64
 import gzip
 import hashlib
 import json
@@ -673,7 +674,6 @@ def browse_file(entry):
         entry.delete(0, tk.END)
         entry.insert(0, ', '.join(file_paths))
 
-
 def browse_folder(entry):
     """Browse and select a folder."""
     folder_path = filedialog.askdirectory()
@@ -696,12 +696,104 @@ def browse_output(entry, operation_type):
         entry.delete(0, tk.END)
         entry.insert(0, output_path)
 
-
 # Function to handle setting the selected compression format
 def set_compression_format(event=None):
     """Set the selected compression format."""
     global selected_format
     selected_format = format_combobox.get()
+
+# Function to handle conversion ConvertX
+def convertx(input_files, conversion_type):
+    # Clear the result text box before starting a new conversion
+    convertx_result_text.delete(1.0, tk.END)
+
+    # Process each input file
+    for input_file in input_files:
+        folder_path = os.path.dirname(input_file)  # Get the folder of the input file
+        base_name = os.path.basename(input_file)  # Get the filename without path
+
+        # Add _{conversion_type} to the output filename
+        if conversion_type == "Image to Base64":  
+            output_file = os.path.join(folder_path, f"{os.path.splitext(base_name)[0]}_base64.txt")
+        elif conversion_type == "Base64 to Image":
+            output_file = os.path.join(folder_path, f"{os.path.splitext(base_name)[0]}_image.png")
+        elif conversion_type == "Text Encoding":
+            output_file = os.path.join(folder_path, f"{os.path.splitext(base_name)[0]}_encoded{os.path.splitext(base_name)[1]}")
+        elif conversion_type == "Base64 to Text":
+            output_file = os.path.join(folder_path, f"{os.path.splitext(base_name)[0]}_decoded{os.path.splitext(base_name)[1]}")
+
+        if conversion_type == "Image to Base64":
+            convert_image_to_base64(input_file, output_file)
+        elif conversion_type == "Base64 to Image":
+            convert_base64_to_image(input_file, output_file)
+        elif conversion_type == "Text Encoding":
+            convert_text_encoding(input_file, output_file)
+        elif conversion_type == "Base64 to Text":
+            convert_base64_to_text(input_file, output_file)
+
+        # Display output file location in result label
+        convertx_result_label.config(text=f"Output saved to: {output_file}")
+
+# Conversion Function: Image to Base64
+def convert_image_to_base64(input_file, output_file):
+    try:
+        with open(input_file, "rb") as f:
+            data = f.read()
+            base64_data = base64.b64encode(data).decode("utf-8")
+            with open(output_file, "w") as f_out:
+                f_out.write(base64_data)
+
+        # Update result text dynamically
+        convertx_result_text.insert(tk.END, f"Image {input_file} converted to Base64 successfully! Saved to {output_file}\n")
+        convertx_result_text.yview(tk.END)  # Auto-scroll to the latest result
+    except Exception as e:
+        convertx_result_text.insert(tk.END, f"Error: {str(e)}\n")
+        convertx_result_text.yview(tk.END)
+
+# Conversion Function: Base64 to Image
+def convert_base64_to_image(input_file, output_file):
+    try:
+        with open(input_file, "r") as f:
+            base64_data = f.read()
+            decoded_data = base64.b64decode(base64_data)
+            with open(output_file, "wb") as f_out:
+                f_out.write(decoded_data)
+        # Update result text dynamically
+        convertx_result_text.insert(tk.END, f"Base64 file {input_file} converted to image successfully! Saved to {output_file}\n")
+        convertx_result_text.yview(tk.END)  # Auto-scroll to the latest result
+    except Exception as e:
+        convertx_result_text.insert(tk.END, f"Error: {str(e)}\n")
+        convertx_result_text.yview(tk.END)
+
+# Conversion Function: Text Encoding
+def convert_text_encoding(input_file, output_file):
+    try:
+        with open(input_file, "r") as f:
+            text_data = f.read()
+            encoded_data = text_data.encode("utf-8")
+            with open(output_file, "wb") as f_out:
+                f_out.write(encoded_data)
+        # Update result text dynamically
+        convertx_result_text.insert(tk.END, f"Text from {input_file} encoded to UTF-8 successfully! Saved to {output_file}\n")
+        convertx_result_text.yview(tk.END)  # Auto-scroll to the latest result
+    except Exception as e:
+        convertx_result_text.insert(tk.END, f"Error: {str(e)}\n")
+        convertx_result_text.yview(tk.END)
+
+# Conversion Function: Base64 to Text
+def convert_base64_to_text(input_file, output_file):
+    try:
+        with open(input_file, "r") as f:
+            base64_data = f.read()
+            decoded_data = base64.b64decode(base64_data)
+            with open(output_file, "w") as f_out:
+                f_out.write(decoded_data.decode("utf-8"))
+        # Update result text dynamically
+        convertx_result_text.insert(tk.END, f"Base64 file {input_file} decoded to text successfully! Saved to {output_file}\n")
+        convertx_result_text.yview(tk.END)  # Auto-scroll to the latest result
+    except Exception as e:
+        convertx_result_text.insert(tk.END, f"Error: {str(e)}\n")
+        convertx_result_text.yview(tk.END)
 
 def about_sheekryptor():
     messagebox.showinfo(
@@ -797,6 +889,10 @@ tab_control.add(two_factor_tab, text="2FA Tool", padding=10)
 # SquashIt tab
 squashit_tab = ttk.Frame(tab_control, style="TFrame")
 tab_control.add(squashit_tab, text="SquashIt", padding=10)
+
+# ConvertX tab
+convertx_tab = ttk.Frame(tab_control, style="TFrame")
+tab_control.add(convertx_tab, text="ConvertX", padding=10)
 
 # Settings tab
 settings_tab = ttk.Frame(tab_control, style="TFrame")
@@ -1053,11 +1149,11 @@ request_body_entry.grid(row=5, column=1, padx=10, pady=10, sticky="w")
 # Response Viewer (Text area)
 response_text = tk.Text(api_testing_tab, width=80, height=15,
                         wrap="word", background="#0D0221", foreground="#EDF5FC")
-response_text.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
+response_text.grid(row=7, column=0, columnspan=3, padx=10, pady=10)
 
 # Send Request Button
 ttk.Button(api_testing_tab, text="Test API", command=send_api_request,
-           style="TButton").grid(row=7, column=0, pady=10, columnspan=3)
+           style="TButton").grid(row=6, column=0, pady=10, columnspan=3)
 
 # Save Results Button
 ttk.Button(api_testing_tab, text="Save Results", command=save_results,
@@ -1212,6 +1308,58 @@ ttk.Button(squashit_tab, text="UnSquashIT", command=lambda: unsquashit(unsquashi
 unsquashit_result_label = ttk.Label(squashit_tab, text="", foreground="green", font=(fontStyle, 8))
 unsquashit_result_label.grid(row=11, column=0, columnspan=3, padx=10, pady=10)
 
+
+
+"""
+#################### ConvertX Tab ####################
+"""
+# Conversion tab layout
+convertx_tab.grid_columnconfigure(0, weight=1)
+convertx_tab.grid_columnconfigure(1, weight=1)
+convertx_tab.grid_columnconfigure(2, weight=1)
+
+for i in range(10):  # Ensure all rows align uniformly
+    convertx_tab.grid_rowconfigure(i, weight=1)
+
+# ConvertX Tab Title
+ttk.Label(convertx_tab, text="ConvertX", style="TLabel").grid(
+    row=0, column=0, columnspan=3, pady=20)
+
+# Description for the ConvertX tool
+ttk.Label(convertx_tab, text="ConvertX is a powerful tool for converting between various formats "
+                             "including image to base64, base64 to image, text encoding conversions, "
+                             "and much more. Choose your conversion type and proceed with ease.",
+          wraplength=600,  # Adjust width for better readability
+          style="TLabel").grid(row=1, column=0, columnspan=3, padx=10, pady=10)
+
+# Conversion Type ComboBox
+ttk.Label(convertx_tab, text="Conversion Type").grid(
+    row=2, column=0, padx=10, pady=10)
+conversion_type_combobox = ttk.Combobox(
+    convertx_tab, values=["Image to Base64", "Base64 to Image", "Text Encoding", "Base64 to Text"], state="readonly", width=15
+)
+conversion_type_combobox.set("Image to Base64")  # Default value
+conversion_type_combobox.grid(row=2, column=1, padx=10, pady=10)
+
+# Input Files Selection
+ttk.Label(convertx_tab, text="Select Files:").grid(
+    row=3, column=0, padx=10, pady=10)
+input_files_entry = ttk.Entry(convertx_tab, width=40)
+input_files_entry.grid(row=3, column=1, padx=10, pady=10)
+
+ttk.Button(convertx_tab, text="Browse", command=lambda: browse_file(input_files_entry)).grid(row=3, column=2, padx=10, pady=10)
+
+# Conversion Button
+ttk.Button(convertx_tab, text="Convert", command=lambda: convertx(
+    input_files_entry.get().split(', '), conversion_type_combobox.get())).grid(row=5, column=0, columnspan=3, pady=20)
+
+# Result Label
+convertx_result_label = ttk.Label(convertx_tab, text="", foreground="green", font=("Arial", 8))
+convertx_result_label.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
+
+# Result text box area for ConvertX
+convertx_result_text = tk.Text(convertx_tab, height=15, width=80, wrap="word", background="#0D0221", foreground="#EDF5FC")
+convertx_result_text.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
 """
 #################### Settings Tab ####################
