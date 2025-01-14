@@ -50,6 +50,8 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 - `tkinter` (for GUI)
 - `ttkthemes` (for theme styling)
 - `pyotp` package
+- `requests` package
+- `pillow` package
 
 ## Usage
 
