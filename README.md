@@ -144,7 +144,7 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 
 SheeKryptor is a simple but powerful tool for securely encrypting and decrypting files. It aims to provide a safe and easy-to-use solution for managing sensitive data.
 
-- **Version**: v2.4.4
+- **Version**: v2.4.5
 - **Author**: Ahmeed Sheeko
 - **Contact**: sheekovic@gmail.com
 
