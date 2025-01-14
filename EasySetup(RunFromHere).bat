@@ -40,6 +40,12 @@ echo Done installing ttkthemes.
 echo Installing pyotp library...
 pip install pyotp
 echo Done installing pyotp.
+echo Installing pillow library...
+pip install pillow
+echo Done installing pillow.
+echo Installing requests library...
+pip install requests
+echo Done installing requests.
 
 
 :: Run the SheeKryptor script
