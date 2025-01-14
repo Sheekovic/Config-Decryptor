@@ -852,7 +852,6 @@ def generate_temp_mail():
     name = name_entry.get().strip()
     password = password_entry.get().strip()
 
-
     # Create an account
     account_url = "https://api.mail.tm/accounts"
     account_data = {
@@ -867,7 +866,8 @@ def generate_temp_mail():
     account_id_label.config(text="Account ID: " + account_details['id'])
     account_address_label.config(text="Address: " + account_details['address'])
     account_quota_label.config(text="Quota: " + str(account_details['quota']))
-    account_created_at_label.config(text="Created At: " + account_details['createdAt'])
+    account_created_at_label.config(
+        text="Created At: " + account_details['createdAt'])
 
     # Log in to get the JWT token
     token_url = "https://api.mail.tm/token"
@@ -895,8 +895,11 @@ def generate_temp_mail():
     messages_result_text.insert(tk.END, str(messages_data))
 
 # Refresh Messages Function
+
+
 def refresh_messages():
-    global headers, messages_url, messages_result_text  # Use global variables defined in `generate_temp_mail`
+    # Use global variables defined in `generate_temp_mail`
+    global headers, messages_url, messages_result_text
     messages_response = requests.get(messages_url, headers=headers)
     messages_response.raise_for_status()
     messages_data = messages_response.json()
@@ -1416,10 +1419,12 @@ format_combobox.set('zlib')  # Default value
 format_combobox.grid(row=5, column=1, padx=10, pady=10)
 
 # Compression Button
-ttk.Button(squashit_tab, text="SquashIT", command=lambda: squashit(input_files_entry.get().split(', '), output_file_entry.get(), int(compression_level_combobox.get()), format_combobox.get())).grid(row=6, column=0, columnspan=3, pady=20)
+ttk.Button(squashit_tab, text="SquashIT", command=lambda: squashit(input_files_entry.get().split(', '), output_file_entry.get(
+), int(compression_level_combobox.get()), format_combobox.get())).grid(row=6, column=0, columnspan=3, pady=20)
 
 # Result Label
-squashit_result_label = ttk.Label(squashit_tab, text="", foreground="green", font=(fontStyle, 8))
+squashit_result_label = ttk.Label(
+    squashit_tab, text="", foreground="green", font=(fontStyle, 8))
 squashit_result_label.grid(row=8, column=0, columnspan=3, padx=10, pady=10)
 
 # input Label for the decompression tool
@@ -1431,12 +1436,13 @@ ttk.Button(squashit_tab, text="Browse", command=lambda: browse_file(
     unsquashit_input_files_entry)).grid(row=9, column=2, padx=10, pady=10)
 
 # Decompression Button (updated to pass the correct arguments)
-ttk.Button(squashit_tab, text="UnSquashIT", command=lambda: unsquashit(unsquashit_input_files_entry.get().split(', '), '')).grid(row=10, column=0, columnspan=3, pady=20)
+ttk.Button(squashit_tab, text="UnSquashIT", command=lambda: unsquashit(
+    unsquashit_input_files_entry.get().split(', '), '')).grid(row=10, column=0, columnspan=3, pady=20)
 
 # result Label
-unsquashit_result_label = ttk.Label(squashit_tab, text="", foreground="green", font=(fontStyle, 8))
+unsquashit_result_label = ttk.Label(
+    squashit_tab, text="", foreground="green", font=(fontStyle, 8))
 unsquashit_result_label.grid(row=11, column=0, columnspan=3, padx=10, pady=10)
-
 
 
 """
@@ -1476,18 +1482,21 @@ ttk.Label(convertx_tab, text="Select Files:").grid(
 input_files_entry = ttk.Entry(convertx_tab, width=40)
 input_files_entry.grid(row=3, column=1, padx=10, pady=10)
 
-ttk.Button(convertx_tab, text="Browse", command=lambda: browse_file(input_files_entry)).grid(row=3, column=2, padx=10, pady=10)
+ttk.Button(convertx_tab, text="Browse", command=lambda: browse_file(
+    input_files_entry)).grid(row=3, column=2, padx=10, pady=10)
 
 # Conversion Button
 ttk.Button(convertx_tab, text="Convert", command=lambda: convertx(
     input_files_entry.get().split(', '), conversion_type_combobox.get())).grid(row=5, column=0, columnspan=3, pady=20)
 
 # Result Label
-convertx_result_label = ttk.Label(convertx_tab, text="", foreground="green", font=("Arial", 8))
+convertx_result_label = ttk.Label(
+    convertx_tab, text="", foreground="green", font=("Arial", 8))
 convertx_result_label.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
 # Result text box area for ConvertX
-convertx_result_text = tk.Text(convertx_tab, height=15, width=80, wrap="word", background=gray, foreground=green)
+convertx_result_text = tk.Text(
+    convertx_tab, height=15, width=80, wrap="word", background=gray, foreground=green)
 convertx_result_text.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
 
@@ -1544,13 +1553,13 @@ account_created_at_label = ttk.Label(temp_mail_tab, text="", style="TLabel")
 account_created_at_label.grid(row=7, column=0, padx=10, pady=10, columnspan=3)
 
 # Result text box area for Messages
-messages_result_text = tk.Text(temp_mail_tab, height=15, width=80, wrap="word", background=gray, foreground=green)
+messages_result_text = tk.Text(
+    temp_mail_tab, height=15, width=80, wrap="word", background=gray, foreground=green)
 messages_result_text.grid(row=8, column=0, columnspan=3, padx=10, pady=10)
 
 # Refresh Button
 ttk.Button(temp_mail_tab, text="Refresh", command=refresh_messages).grid(
     row=9, column=0, columnspan=3, pady=20)
-
 
 
 """
@@ -1591,7 +1600,8 @@ available_font_styles = sorted(tkFont.families())
 font_style_combobox = ttk.Combobox(
     settings_tab, values=available_font_styles, style="TCombobox", state="readonly", justify="center"
 )
-font_style_combobox.set(settings_font_style)  # Set the current font style as default
+# Set the current font style as default
+font_style_combobox.set(settings_font_style)
 font_style_combobox.grid(row=2, column=1, padx=10, pady=10)
 
 # Label for font size
@@ -1605,7 +1615,8 @@ available_font_sizes = [8, 10, 12, 14, 16, 18,
 font_size_combobox = ttk.Combobox(
     settings_tab, values=available_font_sizes, style="TCombobox", state="readonly", justify="center"
 )
-font_size_combobox.set(settings_font_size)  # Set the current font size as default
+# Set the current font size as default
+font_size_combobox.set(settings_font_size)
 font_size_combobox.grid(row=3, column=1, padx=10, pady=10)
 
 # Button to apply font options
