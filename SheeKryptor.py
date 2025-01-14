@@ -949,6 +949,7 @@ black = "#000000"
 white = "#FFFFFF"
 green = "#00FF00"
 red = "#FF0000"
+gray = "#433e3f"
 
 # Create the style object before creating tabs
 style = ttk.Style()
@@ -1083,7 +1084,7 @@ ttk.Button(decryptor_tab, text="Decrypt", command=start_decryption,
 
 # Log Text Area
 decryptor_log = tk.Text(decryptor_tab, width=80, height=10, wrap="word",
-                        state="normal", background="#0D0221", foreground="#EDF5FC")
+                        state="normal", background=gray, foreground=green)
 decryptor_log.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
 
 """
@@ -1133,7 +1134,7 @@ ttk.Button(encryptor_tab, text="Encrypt", command=start_encryption,
 
 # log output text widget to display logs
 log_output_text = tk.Text(encryptor_tab, width=80, height=10,
-                          wrap="word", background="#0D0221", foreground="#EDF5FC")
+                          wrap="word", background=gray, foreground=green)
 log_output_text.grid(row=5, column=0, columnspan=3, padx=10, pady=10)
 log_output_text.config(state='normal')
 log_output_text.insert('end', 'Encryption Log:\n')
@@ -1276,7 +1277,7 @@ request_body_entry.grid(row=5, column=1, padx=10, pady=10, sticky="w")
 
 # Response Viewer (Text area)
 response_text = tk.Text(api_testing_tab, width=80, height=15,
-                        wrap="word", background="#0D0221", foreground="#EDF5FC")
+                        wrap="word", background=gray, foreground=green)
 response_text.grid(row=7, column=0, columnspan=3, padx=10, pady=10)
 
 # Send Request Button
@@ -1486,7 +1487,7 @@ convertx_result_label = ttk.Label(convertx_tab, text="", foreground="green", fon
 convertx_result_label.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
 # Result text box area for ConvertX
-convertx_result_text = tk.Text(convertx_tab, height=15, width=80, wrap="word", background="#0D0221", foreground="#EDF5FC")
+convertx_result_text = tk.Text(convertx_tab, height=15, width=80, wrap="word", background=gray, foreground=green)
 convertx_result_text.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
 
@@ -1543,7 +1544,7 @@ account_created_at_label = ttk.Label(temp_mail_tab, text="", style="TLabel")
 account_created_at_label.grid(row=7, column=0, padx=10, pady=10, columnspan=3)
 
 # Result text box area for Messages
-messages_result_text = tk.Text(temp_mail_tab, height=15, width=80, wrap="word", background="#0D0221", foreground="#EDF5FC")
+messages_result_text = tk.Text(temp_mail_tab, height=15, width=80, wrap="word", background=gray, foreground=green)
 messages_result_text.grid(row=8, column=0, columnspan=3, padx=10, pady=10)
 
 # Refresh Button
