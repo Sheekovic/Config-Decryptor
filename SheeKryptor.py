@@ -52,11 +52,17 @@ config = configparser.ConfigParser()
 # Read settings from the INI file
 config.read("settings.ini")
 # Get settings with defaults if not found
-settings_theme = config.get("Settings", "theme", fallback="equilux") # Default theme is 'equilux'
-settings_font_style = config.get("Settings", "font_style", fallback="OCR A Extended") # Default font style is 'OCR A Extended'
-settings_font_size = config.get("Settings", "font_size", fallback="16")  # Default font size is '16'
+# Default theme is 'equilux'
+settings_theme = config.get("Settings", "theme", fallback="equilux")
+# Default font style is 'OCR A Extended'
+settings_font_style = config.get(
+    "Settings", "font_style", fallback="OCR A Extended")
+settings_font_size = config.get(
+    "Settings", "font_size", fallback="16")  # Default font size is '16'
 
 # Function to fetch title and version from the API
+
+
 def fetch_title_and_version():
     try:
         # Make the GET request to fetch the data
@@ -355,7 +361,8 @@ def load_settings():
         style.configure("Treeview", font=(saved_font_style, saved_font_size))
         style.configure("TRadiobutton", font=(
             saved_font_style, saved_font_size))
-        style.configure("TProgressbar", font=(saved_font_style, saved_font_size))
+        style.configure("TProgressbar", font=(
+            saved_font_style, saved_font_size))
         # Refresh the application
         root.update()
 
@@ -578,7 +585,8 @@ def unsquashit(input_file, output_dir):
             input_file = input_file[0]  # Process the first file if it's a list
 
         # Define the output file path to be in the same directory as input file
-        output_file_path = os.path.join(output_dir, os.path.basename(input_file).replace(".zlib", ""))
+        output_file_path = os.path.join(
+            output_dir, os.path.basename(input_file).replace(".zlib", ""))
 
         # Read the input file
         with open(input_file, "rb") as f_in:
@@ -599,10 +607,12 @@ def unsquashit(input_file, output_dir):
     except Exception as e:
         return f"Unsquash failed: {str(e)}"
 
+
 def squashit(input_files, output_file, compression_level=9, compression_format='zlib'):
     """Compress the selected files into a squash file with the given compression format."""
     try:
-        total_size = sum(os.path.getsize(f) for f in input_files)  # Total size of all files
+        total_size = sum(os.path.getsize(f)
+                         for f in input_files)  # Total size of all files
         compressed_data = bytearray()
         compressed_data_size = 0
 
@@ -619,11 +629,14 @@ def squashit(input_files, output_file, compression_level=9, compression_format='
             for i in range(0, len(data), 1024 * 1024):  # 1MB chunk size
                 chunk = data[i:i + 1024 * 1024]
                 if compression_format == 'gz':
-                    compressed_chunk = gzip.compress(chunk, compresslevel=compression_level)
+                    compressed_chunk = gzip.compress(
+                        chunk, compresslevel=compression_level)
                 elif compression_format == 'tar.zlib':
-                    compressed_chunk = zlib.compress(chunk, level=compression_level)
+                    compressed_chunk = zlib.compress(
+                        chunk, level=compression_level)
                 else:  # Default zlib compression
-                    compressed_chunk = zlib.compress(chunk, level=compression_level)
+                    compressed_chunk = zlib.compress(
+                        chunk, level=compression_level)
 
                 compressed_data.extend(compressed_chunk)
                 compressed_data_size += len(compressed_chunk)
@@ -660,12 +673,15 @@ def squashit(input_files, output_file, compression_level=9, compression_format='
 
         # Generate checksum
         file_hash = hashlib.sha256(compressed_data).hexdigest()
-        squashit_result_label.config(text=f"Compression completed! Checksum: {file_hash}", foreground="green")
+        squashit_result_label.config(text=f"Compression completed! Checksum: {
+                                     file_hash}", foreground="green")
         return f"Compression completed successfully! Saved to {output_file} with checksum: {file_hash}"
 
     except Exception as e:
-        squashit_result_label.config(text=f"Compression failed: {str(e)}", foreground="red")
+        squashit_result_label.config(text=f"Compression failed: {
+                                     str(e)}", foreground="red")
         return f"Compression failed: {e}"
+
 
 def browse_file(entry):
     """Browse and select files."""
@@ -673,6 +689,7 @@ def browse_file(entry):
     if file_paths:
         entry.delete(0, tk.END)
         entry.insert(0, ', '.join(file_paths))
+
 
 def browse_folder(entry):
     """Browse and select a folder."""
@@ -691,36 +708,46 @@ def browse_output(entry, operation_type):
     elif operation_type == 'UnSquashIt':
         # For UnSquashIt, allow the user to select a folder for decompressed files
         output_path = filedialog.askdirectory()  # Asking for a directory path
-    
+
     if output_path:
         entry.delete(0, tk.END)
         entry.insert(0, output_path)
 
 # Function to handle setting the selected compression format
+
+
 def set_compression_format(event=None):
     """Set the selected compression format."""
     global selected_format
     selected_format = format_combobox.get()
 
 # Function to handle conversion ConvertX
+
+
 def convertx(input_files, conversion_type):
     # Clear the result text box before starting a new conversion
     convertx_result_text.delete(1.0, tk.END)
 
     # Process each input file
     for input_file in input_files:
-        folder_path = os.path.dirname(input_file)  # Get the folder of the input file
-        base_name = os.path.basename(input_file)  # Get the filename without path
+        # Get the folder of the input file
+        folder_path = os.path.dirname(input_file)
+        # Get the filename without path
+        base_name = os.path.basename(input_file)
 
         # Add _{conversion_type} to the output filename
-        if conversion_type == "Image to Base64":  
-            output_file = os.path.join(folder_path, f"{os.path.splitext(base_name)[0]}_base64.txt")
+        if conversion_type == "Image to Base64":
+            output_file = os.path.join(
+                folder_path, f"{os.path.splitext(base_name)[0]}_base64.txt")
         elif conversion_type == "Base64 to Image":
-            output_file = os.path.join(folder_path, f"{os.path.splitext(base_name)[0]}_image.png")
+            output_file = os.path.join(
+                folder_path, f"{os.path.splitext(base_name)[0]}_image.png")
         elif conversion_type == "Text Encoding":
-            output_file = os.path.join(folder_path, f"{os.path.splitext(base_name)[0]}_encoded{os.path.splitext(base_name)[1]}")
+            output_file = os.path.join(folder_path, f"{os.path.splitext(
+                base_name)[0]}_encoded{os.path.splitext(base_name)[1]}")
         elif conversion_type == "Base64 to Text":
-            output_file = os.path.join(folder_path, f"{os.path.splitext(base_name)[0]}_decoded{os.path.splitext(base_name)[1]}")
+            output_file = os.path.join(folder_path, f"{os.path.splitext(
+                base_name)[0]}_decoded{os.path.splitext(base_name)[1]}")
 
         if conversion_type == "Image to Base64":
             convert_image_to_base64(input_file, output_file)
@@ -735,6 +762,8 @@ def convertx(input_files, conversion_type):
         convertx_result_label.config(text=f"Output saved to: {output_file}")
 
 # Conversion Function: Image to Base64
+
+
 def convert_image_to_base64(input_file, output_file):
     try:
         with open(input_file, "rb") as f:
@@ -744,13 +773,16 @@ def convert_image_to_base64(input_file, output_file):
                 f_out.write(base64_data)
 
         # Update result text dynamically
-        convertx_result_text.insert(tk.END, f"Image {input_file} converted to Base64 successfully! Saved to {output_file}\n")
+        convertx_result_text.insert(tk.END, f"Image {
+                                    input_file} converted to Base64 successfully! Saved to {output_file}\n")
         convertx_result_text.yview(tk.END)  # Auto-scroll to the latest result
     except Exception as e:
         convertx_result_text.insert(tk.END, f"Error: {str(e)}\n")
         convertx_result_text.yview(tk.END)
 
 # Conversion Function: Base64 to Image
+
+
 def convert_base64_to_image(input_file, output_file):
     try:
         with open(input_file, "r") as f:
@@ -759,13 +791,16 @@ def convert_base64_to_image(input_file, output_file):
             with open(output_file, "wb") as f_out:
                 f_out.write(decoded_data)
         # Update result text dynamically
-        convertx_result_text.insert(tk.END, f"Base64 file {input_file} converted to image successfully! Saved to {output_file}\n")
+        convertx_result_text.insert(tk.END, f"Base64 file {
+                                    input_file} converted to image successfully! Saved to {output_file}\n")
         convertx_result_text.yview(tk.END)  # Auto-scroll to the latest result
     except Exception as e:
         convertx_result_text.insert(tk.END, f"Error: {str(e)}\n")
         convertx_result_text.yview(tk.END)
 
 # Conversion Function: Text Encoding
+
+
 def convert_text_encoding(input_file, output_file):
     try:
         with open(input_file, "r") as f:
@@ -774,13 +809,16 @@ def convert_text_encoding(input_file, output_file):
             with open(output_file, "wb") as f_out:
                 f_out.write(encoded_data)
         # Update result text dynamically
-        convertx_result_text.insert(tk.END, f"Text from {input_file} encoded to UTF-8 successfully! Saved to {output_file}\n")
+        convertx_result_text.insert(tk.END, f"Text from {
+                                    input_file} encoded to UTF-8 successfully! Saved to {output_file}\n")
         convertx_result_text.yview(tk.END)  # Auto-scroll to the latest result
     except Exception as e:
         convertx_result_text.insert(tk.END, f"Error: {str(e)}\n")
         convertx_result_text.yview(tk.END)
 
 # Conversion Function: Base64 to Text
+
+
 def convert_base64_to_text(input_file, output_file):
     try:
         with open(input_file, "r") as f:
@@ -789,12 +827,98 @@ def convert_base64_to_text(input_file, output_file):
             with open(output_file, "w") as f_out:
                 f_out.write(decoded_data.decode("utf-8"))
         # Update result text dynamically
-        convertx_result_text.insert(tk.END, f"Base64 file {input_file} decoded to text successfully! Saved to {output_file}\n")
+        convertx_result_text.insert(tk.END, f"Base64 file {
+                                    input_file} decoded to text successfully! Saved to {output_file}\n")
         convertx_result_text.yview(tk.END)  # Auto-scroll to the latest result
     except Exception as e:
         convertx_result_text.insert(tk.END, f"Error: {str(e)}\n")
         convertx_result_text.yview(tk.END)
 
+# Function to generate temporary mail
+
+
+def generate_temp_mail():
+    # Declare globals for use in `refresh_messages`
+    global headers, messages_url, messages_result_text
+    # Get Available Domains
+    domain_response = requests.get("https://api.mail.tm/domains")
+    domain_response.raise_for_status()  # Check for request errors
+    domain_data = domain_response.json()
+
+    # Get the first domain string
+    domain = domain_data['hydra:member'][0]['domain']
+
+    # Get Name and Password from Entry Fields
+    name = name_entry.get().strip()
+    password = password_entry.get().strip()
+
+
+    # Create an account
+    account_url = "https://api.mail.tm/accounts"
+    account_data = {
+        "address": name + "@" + domain,
+        "password": password
+    }
+    account_response = requests.post(account_url, json=account_data)
+    account_response.raise_for_status()
+    account_details = account_response.json()
+
+    # print account_details in account_id_label
+    account_id_label.config(text="Account ID: " + account_details['id'])
+    account_address_label.config(text="Address: " + account_details['address'])
+    account_quota_label.config(text="Quota: " + str(account_details['quota']))
+    account_created_at_label.config(text="Created At: " + account_details['createdAt'])
+
+    # Log in to get the JWT token
+    token_url = "https://api.mail.tm/token"
+    login_data = {
+        "address": account_details['address'],
+        "password": password
+    }
+    token_response = requests.post(token_url, json=login_data)
+    token_response.raise_for_status()
+    token_details = token_response.json()
+
+    jwt_token = token_details['token']
+
+    # Use the JWT token to fetch messages
+    messages_url = "https://api.mail.tm/messages"
+    headers = {
+        "Authorization": f"Bearer {jwt_token}"
+    }
+    messages_response = requests.get(messages_url, headers=headers)
+    messages_response.raise_for_status()
+    messages_data = messages_response.json()
+
+    # print messages_data in messages_result_text
+    messages_result_text.delete("1.0", tk.END)
+    messages_result_text.insert(tk.END, str(messages_data))
+
+# Refresh Messages Function
+def refresh_messages():
+    global headers, messages_url, messages_result_text  # Use global variables defined in `generate_temp_mail`
+    messages_response = requests.get(messages_url, headers=headers)
+    messages_response.raise_for_status()
+    messages_data = messages_response.json()
+
+    # Clear existing text in the result box
+    messages_result_text.delete("1.0", tk.END)
+
+    # Loop through each message and format its relevant data
+    for message in messages_data['hydra:member']:
+        message_info = (
+            f"id: {message['id']}\n"
+            f"from: {message['from']['address']}\n"
+            f"subject: {message['subject']}\n"
+            f"intro: {message['intro']}\n"
+            f"seen: {message['seen']}\n"
+            f"createdAt: {message['createdAt']}\n"
+            "------------------------\n"
+        )
+        messages_result_text.insert(tk.END, message_info)
+
+
+# Function to handle about SheeKryptor
 def about_sheekryptor():
     messagebox.showinfo(
         "About SheeKryptor", "SheeKryptor is a secure encryption and decryption tool.\n\nVersion: v1.0.0\n\nAuthor: Ahmeed Sheeko\n\nContact: sheekovic@gmail.com")
@@ -893,6 +1017,10 @@ tab_control.add(squashit_tab, text="SquashIt", padding=10)
 # ConvertX tab
 convertx_tab = ttk.Frame(tab_control, style="TFrame")
 tab_control.add(convertx_tab, text="ConvertX", padding=10)
+
+# Temp Mail tab
+temp_mail_tab = ttk.Frame(tab_control, style="TFrame")
+tab_control.add(temp_mail_tab, text="Temp Mail", padding=10)
 
 # Settings tab
 settings_tab = ttk.Frame(tab_control, style="TFrame")
@@ -1360,6 +1488,69 @@ convertx_result_label.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 # Result text box area for ConvertX
 convertx_result_text = tk.Text(convertx_tab, height=15, width=80, wrap="word", background="#0D0221", foreground="#EDF5FC")
 convertx_result_text.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
+
+
+"""
+#################### Temp Mail Tab ####################
+Temp Mail to Generate a Temporary Email Address
+"""
+
+# configure columns and rows for alignment
+temp_mail_tab.grid_columnconfigure(0, weight=1)
+temp_mail_tab.grid_columnconfigure(1, weight=1)
+temp_mail_tab.grid_columnconfigure(2, weight=1)
+for i in range(10):  # Ensure all rows align uniformly
+    temp_mail_tab.grid_rowconfigure(i, weight=1)
+
+# Temp Mail Tab Title
+ttk.Label(temp_mail_tab, text="Temp Mail", style="TLabel").grid(
+    row=0, column=0, columnspan=3, pady=20)
+
+# Name Label
+ttk.Label(temp_mail_tab, text="Name:", style="TLabel").grid(
+    row=1, column=0, padx=10, pady=10)
+
+# Name Entry
+name_entry = ttk.Entry(temp_mail_tab, width=40)
+name_entry.grid(row=1, column=1, padx=10, pady=10)
+
+# Password Label
+ttk.Label(temp_mail_tab, text="Password:", style="TLabel").grid(
+    row=2, column=0, padx=10, pady=10)
+
+# Password Entry
+password_entry = ttk.Entry(temp_mail_tab, show="*", width=40)
+password_entry.grid(row=2, column=1, padx=10, pady=10)
+
+# Generate Temp Mail Button
+ttk.Button(temp_mail_tab, text="Generate Temp Mail", command=generate_temp_mail).grid(
+    row=3, column=0, columnspan=3, pady=20)
+
+# Account ID Label
+account_id_label = ttk.Label(temp_mail_tab, text="", style="TLabel")
+account_id_label.grid(row=4, column=0, padx=10, pady=10, columnspan=3)
+
+# Account Address Label
+account_address_label = ttk.Label(temp_mail_tab, text="", style="TLabel")
+account_address_label.grid(row=5, column=0, padx=10, pady=10, columnspan=3)
+
+# Account Quota Label
+account_quota_label = ttk.Label(temp_mail_tab, text="", style="TLabel")
+account_quota_label.grid(row=6, column=0, padx=10, pady=10, columnspan=3)
+
+# Account Created At Label
+account_created_at_label = ttk.Label(temp_mail_tab, text="", style="TLabel")
+account_created_at_label.grid(row=7, column=0, padx=10, pady=10, columnspan=3)
+
+# Result text box area for Messages
+messages_result_text = tk.Text(temp_mail_tab, height=15, width=80, wrap="word", background="#0D0221", foreground="#EDF5FC")
+messages_result_text.grid(row=8, column=0, columnspan=3, padx=10, pady=10)
+
+# Refresh Button
+ttk.Button(temp_mail_tab, text="Refresh", command=refresh_messages).grid(
+    row=9, column=0, columnspan=3, pady=20)
+
+
 
 """
 #################### Settings Tab ####################
