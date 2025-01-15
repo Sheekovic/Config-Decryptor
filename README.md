@@ -91,25 +91,17 @@ SheeKryptor is a secure file encryption and decryption tool designed for ease of
 6. Save Results to a text file by clicking "Save Results".
 
 ### 2FA Tool - Two Factor Authentication
-1. Go to the "2FA Tool" tab.
-   - This section allows you to manage your Two-Factor Authentication (2FA) accounts.
-2. Enter the Provider Name.
-   - Enter the name of the provider (e.g., Google, Facebook) in the "Provider" field.
-3. Enter Your Username/Email.
-   - Provide the username or email associated with your 2FA account in the "Username/Email" field.
-4. Enter Your 2FA Key.
-   - Enter your secret 2FA key in the "2FA Key" field. This key is typically provided by the service when setting up 2FA.
-5. Select "Time-Based" for Time-Based Authentication (Optional).
-   - If your 2FA method uses time-based one-time passwords (TOTP), check the "Time Based" checkbox.
-6. Add Your Account.
-   - Click the "Add Account" button to save the 2FA details for this account to the database.
-7. View Accounts in the Table.
-   - All added accounts will be listed in the table below, showing the provider name, username/email, and the generated OTP (One-Time Password) for that account.
+1. Go to the "2FA Tool" tab - This section allows you to manage your Two-Factor Authentication (2FA) accounts.
+2. Enter the name of the provider (e.g., Google, Facebook) in the "Provider" field.
+3. Provide the username or email associated with your 2FA account in the "Username/Email" field.
+4. Enter your secret 2FA key in the "2FA Key" field. This key is typically provided by the service when setting up 2FA.
+5. If your 2FA method uses time-based one-time passwords (TOTP), check the "Time Based" checkbox (optional).
+6. Add Your Account Click "Add Account" button to save the 2FA details for this account to the database.
+7. View Accounts All added accounts will be listed in the table below, showing the provider name, username/email, and the generated OTP (One-Time Password) for that account.
 8. Delete an Account.
    - To delete an account, select the account from the "Select Account" dropdown.
    - Click "Delete Account" to remove it from the database.
-9. OTP Refresh.
-   - The OTP for each account will be refreshed every second to show the current code. The table will display the updated OTP in real-time.
+9. OTP Refresh for each account will be refreshed every second to show the current code. The table will display the updated OTP in real-time.
 
 ### SquashIT Tool - File Compression
 1. Go to the "SquashIT" tab.
